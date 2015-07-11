@@ -1,0 +1,10 @@
+{
+	"name": "telegram-bot-examples",
+	"version": "1.0.0",
+	"author": "PeterCxy",
+	"description": "Example modules of telegram-bot-nodejs",
+	"dependencies": {
+		"telegram-bot-coffee": ">=1.0.0" 
+	},
+	"main": "./lib/functions"
+}
