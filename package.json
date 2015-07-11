@@ -2,7 +2,9 @@
 	"name": "telegram-bot-examples",
 	"version": "1.0.0",
 	"author": "PeterCxy",
-	"description": "Example modules of telegram-bot-nodejs",
+	"description": "Example modules for telegram-bot-coffee",
+	"license": "GPL-3.0.0",
+	"homepage": "https://github.com/PeterCxy/telegram-bot-examples",
 	"dependencies": {
 		"telegram-bot-coffee": ">=1.0.0" 
 	},
