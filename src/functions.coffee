@@ -3,7 +3,6 @@ exports.setup = (telegram, store) ->
 
 	[
 			cmd: 'hello'
-			args: ''
 			num: 0
 			desc: 'Just hello'
 			act: (msg) =>
@@ -17,16 +16,14 @@ exports.setup = (telegram, store) ->
 				telegram.sendMessage msg.chat.id, sth
 		,
 			cmd: 'remind'
-			args: '<time> <message>'
 			num: 2
 			desc: 'Remind you of <message> after <time> (format: AdBhCmDs)'
-			act: (msg, time, sth) =>
+			act: (msg, time, message) =>
 				setTimeout =>
-					telegram.sendMessage msg.chat.id, sth
+					telegram.sendMessage msg.chat.id, message
 				, time
 		,
 			cmd: 'parsetime'
-			args: '<time>'
 			num: 1
 			desc: 'Get milliseconds of AdBhCmDs'
 			debug: yes
