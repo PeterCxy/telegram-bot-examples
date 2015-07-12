@@ -21,7 +21,7 @@ exports.setup = (telegram, store) ->
 			act: (msg, time, message) =>
 				setTimeout =>
 					telegram.sendMessage msg.chat.id, message
-				, time
+				, parser.time time
 		,
 			cmd: 'parsetime'
 			num: 1
