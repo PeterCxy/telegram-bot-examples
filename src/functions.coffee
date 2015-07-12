@@ -1,3 +1,6 @@
+exports.name = 'examples'
+exports.desc = 'Some interesting example commands'
+
 exports.setup = (telegram, store) ->
 	parser = require './parser'
 
