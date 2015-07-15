@@ -31,7 +31,7 @@ exports.setup = (telegram, store, server) ->
 			num: 0
 			desc: 'A better user interface for the remind command'
 			act: (msg) =>
-				server.grabInput msg.chat.id, pkg.name, 'remindex'
+				server.grabInput msg.chat.id, msg.from.id, pkg.name, 'remindex'
 				store.put 'remind', "#{msg.chat.id}step", 1, (err) =>
 					if err
 						server.releaseInput msg.chat.id
@@ -55,7 +55,7 @@ remindEx = (msg, telegram, store, server) ->
 	console.log "RemindEx!"
 	store.get 'remind', "#{msg.chat.id}step", (err, step) =>
 		if err?
-			server.releaseInput msg.chat.id
+			server.releaseInput msg.chat.id, msg.from.id
 		else
 			console.log "Current step is #{step}"
 			if step is 1
@@ -70,7 +70,7 @@ remindEx = (msg, telegram, store, server) ->
 				else
 					store.put 'remind', "#{msg.chat.id}step", 2, (err) =>
 						if err?
-							server.releaseInput msg.chat.id
+							server.releaseInput msg.chat.id, msg.from.id
 							telegram.sendMessage msg.chat.id, 'Oops, something went wrong'
 						else
 							store.put 'remind', "#{msg.chat.id}time", time, (err) =>
@@ -78,13 +78,13 @@ remindEx = (msg, telegram, store, server) ->
 			else if step is 2
 				store.get 'remind', "#{msg.chat.id}time", (err, time) =>
 					if err?
-						server.releaseInput msg.chat.id
+						server.releaseInput msg.chat.id, msg.from.id
 						telegram.sendMessage msg.chat.id, 'Oops, something went wrong'
 					else
 						telegram.sendMessage msg.chat.id, 'Yes, sir!'
 						setTimeout =>
 							telegram.sendMessage msg.chat.id, msg.text
 						, time
-						server.releaseInput msg.chat.id
+						server.releaseInput msg.chat.id, msg.from.id
 						store.put 'remind', "#{msg.chat.id}step", 0
 						store.put 'remind', "#{msg.chat.id}time", 0
