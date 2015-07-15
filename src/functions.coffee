@@ -36,7 +36,9 @@ exports.setup = (telegram, store, server) ->
 					if err
 						server.releaseInput msg.chat.id
 					else
-						telegram.sendMessage msg.chat.id, 'Well, how long later do you want me to remind you?'
+						telegram.sendMessage msg.chat.id,
+							'Well, how long later do you want me to remind you?',
+							msg.message_id
 		,
 			cmd: 'parsetime'
 			num: 1
@@ -66,7 +68,7 @@ remindEx = (msg, telegram, store, server) ->
 					telegram.sendMessage msg.chat.id, '''
 						Sorry, but I can\'t work with that number. \n
 						Please send me a time with units (s, m, d), and within 23d.
-					'''
+					''', msg.message_id
 				else
 					store.put 'remind', "#{msg.chat.id}step#{msg.from.id}", 2, (err) =>
 						if err?
@@ -74,16 +76,18 @@ remindEx = (msg, telegram, store, server) ->
 							telegram.sendMessage msg.chat.id, 'Oops, something went wrong'
 						else
 							store.put 'remind', "#{msg.chat.id}time#{msg.from.id}", time, (err) =>
-								telegram.sendMessage msg.chat.id, 'Okay, now send me what you want me to remind you of'
+								telegram.sendMessage msg.chat.id,
+									'Okay, now send me what you want me to remind you of',
+									msg.message_id
 			else if step is 2
 				store.get 'remind', "#{msg.chat.id}time#{msg.from.id}", (err, time) =>
 					if err?
 						server.releaseInput msg.chat.id, msg.from.id
 						telegram.sendMessage msg.chat.id, 'Oops, something went wrong'
 					else
-						telegram.sendMessage msg.chat.id, 'Yes, sir!'
+						telegram.sendMessage msg.chat.id, 'Yes, sir!', msg.message_id
 						setTimeout =>
-							telegram.sendMessage msg.chat.id, msg.text
+							telegram.sendMessage msg.chat.id, "@#{msg.from.username} #{msg.text}"
 						, time
 						server.releaseInput msg.chat.id, msg.from.id
 						store.put 'remind', "#{msg.chat.id}step#{msg.from.id}", 0
