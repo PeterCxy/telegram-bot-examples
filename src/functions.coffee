@@ -32,7 +32,7 @@ exports.setup = (telegram, store, server) ->
 			desc: 'A better user interface for the remind command'
 			act: (msg) =>
 				server.grabInput msg.chat.id, msg.from.id, pkg.name, 'remindex'
-				store.put 'remind', "#{msg.chat.id}step", 1, (err) =>
+				store.put 'remind', "#{msg.chat.id}step#{msg.from.id}", 1, (err) =>
 					if err
 						server.releaseInput msg.chat.id
 					else
@@ -53,7 +53,7 @@ exports.input = (cmd, msg, telegram, store, server) ->
 
 remindEx = (msg, telegram, store, server) ->
 	console.log "RemindEx!"
-	store.get 'remind', "#{msg.chat.id}step", (err, step) =>
+	store.get 'remind', "#{msg.chat.id}step#{msg.from.id}", (err, step) =>
 		if err?
 			server.releaseInput msg.chat.id, msg.from.id
 		else
@@ -68,15 +68,15 @@ remindEx = (msg, telegram, store, server) ->
 						Please send me a time with units (s, m, d), and within 23d.
 					'''
 				else
-					store.put 'remind', "#{msg.chat.id}step", 2, (err) =>
+					store.put 'remind', "#{msg.chat.id}step#{msg.from.id}", 2, (err) =>
 						if err?
 							server.releaseInput msg.chat.id, msg.from.id
 							telegram.sendMessage msg.chat.id, 'Oops, something went wrong'
 						else
-							store.put 'remind', "#{msg.chat.id}time", time, (err) =>
+							store.put 'remind', "#{msg.chat.id}time#{msg.from.id}", time, (err) =>
 								telegram.sendMessage msg.chat.id, 'Okay, now send me what you want me to remind you of'
 			else if step is 2
-				store.get 'remind', "#{msg.chat.id}time", (err, time) =>
+				store.get 'remind', "#{msg.chat.id}time#{msg.from.id}", (err, time) =>
 					if err?
 						server.releaseInput msg.chat.id, msg.from.id
 						telegram.sendMessage msg.chat.id, 'Oops, something went wrong'
@@ -86,5 +86,5 @@ remindEx = (msg, telegram, store, server) ->
 							telegram.sendMessage msg.chat.id, msg.text
 						, time
 						server.releaseInput msg.chat.id, msg.from.id
-						store.put 'remind', "#{msg.chat.id}step", 0
-						store.put 'remind', "#{msg.chat.id}time", 0
+						store.put 'remind', "#{msg.chat.id}step#{msg.from.id}", 0
+						store.put 'remind', "#{msg.chat.id}time#{msg.from.id}", 0
