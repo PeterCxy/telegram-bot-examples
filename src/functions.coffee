@@ -51,7 +51,7 @@ exports.setup = (telegram, store, server) ->
 exports.input = (cmd, msg, telegram, store, server) ->
 	switch cmd
 		when 'remindex' then remindEx msg, telegram, store, server
-		else server.releaseInput msg.chat.id
+		else server.releaseInput msg.chat.id, msg.from.id
 
 remindEx = (msg, telegram, store, server) ->
 	console.log "RemindEx!"
