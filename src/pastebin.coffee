@@ -32,7 +32,8 @@ exports.handle = (msg, telegram, store, server) ->
 			else
 				[err] = yield store.put 'pastebin', "#{msg.from.id}url", url, ko.raw()
 				if !err? then telegram.sendMessage msg.chat.id,
-					'Done, sir! Call /paste command somewhere and I will post it there!'
+					'Done, sir! Call /paste command somewhere and I will post it there!', null,
+					telegram.makeHideKeyboard()
 			yield store.put 'pastebin', "#{msg.chat.id}content#{msg.from.id}", '', ko.default()
 			yield store.put 'pastebin', "#{msg.chat.id}step#{msg.from.id}", 0, ko.default()
 			server.releaseInput msg.chat.id, msg.from.id
