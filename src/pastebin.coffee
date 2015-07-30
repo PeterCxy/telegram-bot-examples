@@ -11,16 +11,24 @@ exports.handle = (msg, telegram, store, server) ->
 					content += "\n#{msg.text}"
 				else
 					content = msg.text
-				[err] = yield store.put 'pastebin', "#{msg.chat.id}content#{msg.from.id}", content, ko.raw()
-				if !err?
-					telegram.sendMessage msg.chat.id, 'More? Come on! Send me "Finish" after you have done it!!'
+				# 20K
+				if Buffer.byteLength(content, 'utf-8') >= 20 * 1024
+					telegram.sendMessage msg.chat.id, 'Too long!'
 				else
-					server.releaseInput msg.chat.id, msg.from.id
-					telegram.sendMessage msg.chat.id, 'Oops, something went wrong.'
+					[err] = yield store.put 'pastebin', "#{msg.chat.id}content#{msg.from.id}", content, ko.raw()
+					if !err?
+						telegram.sendMessage msg.chat.id, 'More? Come on! Send me "Finish" after you have done it!!'
+					else
+						server.releaseInput msg.chat.id, msg.from.id
+						telegram.sendMessage msg.chat.id, 'Oops, something went wrong.'
 			else
-				[err] = yield store.put 'pastebin', "#{msg.chat.id}step#{msg.from.id}", 2, ko.raw()
-				telegram.sendMessage msg.chat.id, 'Which type is this text?', null,
-					telegram.makeKeyboard telegram.verticalKeyboard(Object.keys(keyboard)), true
+				content = yield store.get 'pastebin', "#{msg.chat.id}content#{msg.from.id}", ko.default()
+				if content.trim() is ''
+					telegram.sendMessage msg.chat.id, 'But I heared nothing!'
+				else
+					[err] = yield store.put 'pastebin', "#{msg.chat.id}step#{msg.from.id}", 2, ko.raw()
+					telegram.sendMessage msg.chat.id, 'Which type is this text?', null,
+						telegram.makeKeyboard telegram.verticalKeyboard(Object.keys(keyboard)), true
 		else if step is 2
 			content = yield store.get 'pastebin', "#{msg.chat.id}content#{msg.from.id}", ko.default()
 			syntax = keyboard[msg.text]
