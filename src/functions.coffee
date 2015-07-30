@@ -43,6 +43,32 @@ exports.setup = (telegram, store, server) ->
 							'Well, how long later do you want me to remind you?',
 							msg.message_id
 		,
+			cmd: 'copy'
+			num: 0
+			desc: 'Copy some long string to Ubuntu Pastebin (http://paste.ubuntu.com) (Not available in groups)'
+			act: (msg) =>
+				if !msg.chat.title? then korubaku (ko) =>
+					server.grabInput msg.chat.id, msg.from.id, pkg.name, 'pastebin'
+					[err] = yield store.put 'pastebin', "#{msg.chat.id}step#{msg.from.id}", 1, ko.raw()
+					if err
+						server.releaseInput msg.chat.id, msg.from.id
+					else
+						telegram.sendMessage msg.chat.id,
+							'Now, you can send me some text you want to copy to Ubuntu pastebin.'
+		,
+			cmd: 'paste'
+			num: 0
+			desc: 'Paste the url to the last string you copied to Pastebin here.'
+			act: (msg) =>
+				korubaku (ko) =>
+					[err, url] = yield store.get 'pastebin', "#{msg.from.id}url", ko.raw()
+					console.log url
+					if !url? or err?
+						telegram.sendMessage msg.chat.id, ':('
+					else
+						telegram.sendMessage msg.chat.id,
+							"@#{msg.from.username} shared: #{url}"
+		,
 			cmd: 'parsetime'
 			num: 1
 			desc: 'Get milliseconds of AdBhCmDs'
@@ -54,6 +80,7 @@ exports.setup = (telegram, store, server) ->
 exports.input = (cmd, msg, telegram, store, server) ->
 	switch cmd
 		when 'remindex' then remindEx msg, telegram, store, server
+		when 'pastebin' then (require './pastebin').handle msg, telegram, store, server
 		else server.releaseInput msg.chat.id, msg.from.id
 
 remindEx = (msg, telegram, store, server) ->
