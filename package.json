@@ -6,7 +6,8 @@
 	"license": "GPL-3.0.0",
 	"homepage": "https://github.com/PeterCxy/telegram-bot-examples",
 	"dependencies": {
-		"telegram-bot-coffee": ">=1.0.0" 
+		"telegram-bot-coffee": ">=1.0.0",
+		"korubaku": ">=1.0.0"
 	},
 	"main": "./lib/functions"
 }
