@@ -19,10 +19,13 @@ exports.handle = (msg, telegram, store, server) ->
 					telegram.sendMessage msg.chat.id, 'Oops, something went wrong.'
 			else
 				[err] = yield store.put 'pastebin', "#{msg.chat.id}step#{msg.from.id}", 2, ko.raw()
-				telegram.sendMessage msg.chat.id, 'Which type is this text?'
+				telegram.sendMessage msg.chat.id, 'Which type is this text?', null,
+					telegram.makeKeyboard telegram.verticalKeyboard(Object.keys(keyboard)), true
 		else if step is 2
 			content = yield store.get 'pastebin', "#{msg.chat.id}content#{msg.from.id}", ko.default()
-			[url] = yield paste msg.from.username, content, ko.raw()
+			syntax = keyboard[msg.text]
+			syntax = "text" if !syntax?
+			[url] = yield paste msg.from.username, content, syntax, ko.raw()
 			console.log url
 			if !url? or url is ''
 				telegram.sendMessage msg.chat.id, 'Sorry, but I failed...'
@@ -34,13 +37,51 @@ exports.handle = (msg, telegram, store, server) ->
 			yield store.put 'pastebin', "#{msg.chat.id}step#{msg.from.id}", 0, ko.default()
 			server.releaseInput msg.chat.id, msg.from.id
 
-paste = (poster, str, callback) ->
+paste = (poster, str, syntax, callback) ->
 	korubaku (ko) ->
 		[err, res, body] = yield request.post 'http://paste.ubuntu.com/',
 			form:
 				poster: poster
-				syntax: "text"
+				syntax: syntax
 				content: str
 		, ko.raw()
 
 		callback res.headers.location unless err? or res.statusCode isnt 302
+
+keyboard =
+	"Plain Text": "text"
+	"AppleScript": "applescript"
+	"ActionScript": "as"
+	"ActionScript 3": "as3"
+	"Makefile": "make"
+	"Bash": "bash"
+	"Batchfile (Windows)": "bat"
+	"C": "c"
+	"C++": "cpp"
+	"C#": "csharp"
+	"Clojure": "clojure"
+	"Cmake": "cmake"
+	"CoffeeScript": "coffee-script"
+	"Common Lisp": "common-lisp"
+	"CSS": "css"
+	"Erlang": "erlang"
+	"Fortran": "fortran"
+	"Golang": "go"
+	"HTML": "html"
+	"Java": "java"
+	"JavaScript": "js"
+	"LUA": "lua"
+	"Matlab": "matlab"
+	"Objective-C": "objective-c"
+	"Perl": "perl"
+	"PHP": "php"
+	"Python": "python"
+	"Python 3": "python3"
+	"Ruby": "rb"
+	"Scala": "scala"
+	"Sass": "sass"
+	"TeX": "tex"
+	"Vala": "vala"
+	"VB.net": "vb.net"
+	"VimL": "vim"
+	"XML": "xml"
