@@ -83,6 +83,17 @@ exports.input = (cmd, msg, telegram, store, server) ->
 		when 'pastebin' then (require './pastebin').handle msg, telegram, store, server
 		else server.releaseInput msg.chat.id, msg.from.id
 
+exports.cancel = (msg, telegram, store, server) ->
+	console.log 'examples: cancelling operation'
+	
+	korubaku (ko) =>
+		# Remind command
+		yield store.put 'remind', "#{msg.chat.id}step#{msg.from.id}", 0, ko.default()
+		yield store.put 'remind', "#{msg.chat.id}time#{msg.from.id}", 0, ko.default()
+	
+		# Pastebin
+		yield store.put 'pastebin', "#{msg.chat.id}content#{msg.from.id}", '', ko.default()
+
 remindEx = (msg, telegram, store, server) ->
 	korubaku (ko) =>
 		console.log "RemindEx!"
