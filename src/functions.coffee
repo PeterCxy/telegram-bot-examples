@@ -43,6 +43,13 @@ exports.setup = (telegram, store, server) ->
 							'Well, how long later do you want me to remind you?',
 							msg.message_id
 		,
+			cmd: 'id'
+			num: 0
+			debug: yes
+			desc: 'Get ID of this chat.'
+			act: (msg) ->
+				telegram.sendMessage msg.chat.id, msg.chat.id
+		,
 			cmd: 'copy'
 			num: 0
 			desc: 'Copy some long string to Ubuntu Pastebin (http://paste.ubuntu.com) (Not available in groups)'
