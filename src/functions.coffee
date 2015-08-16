@@ -57,7 +57,14 @@ exports.setup = (telegram, store, server) ->
 				results = []
 				for category in args[0].split ';'
 					console.log "working with #{category}"
-					choices = category.split ','
+					comprehension = no
+					if category.startsWith('[') and category.endsWith(']') and category.indexOf('-') > 0
+						category = category[1...-1]
+						[start, ..., end] = category.split '-'
+						choices = []
+						comprehension = yes
+					else
+						choices = category.split ','
 					console.log "choices = #{choices}"
 					result = null
 					if choices.length > 0
@@ -65,6 +72,10 @@ exports.setup = (telegram, store, server) ->
 						console.log "index = #{index}"
 						result = choices[index]
 						console.log "result = #{result}"
+					else if comprehension
+						result = Number start
+						result += Math.random() * (end - start)
+						console.log "#{start}-#{end} -> #{result}"
 					results.push result
 				results.unshift args[1..].join ' '
 				console.log "results = #{results}"
