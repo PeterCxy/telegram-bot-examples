@@ -1,4 +1,5 @@
 {korubaku} = require 'korubaku'
+printf = require 'printf'
 
 exports.name = 'examples'
 exports.desc = 'Some interesting example commands'
@@ -42,6 +43,33 @@ exports.setup = (telegram, store, server) ->
 						telegram.sendMessage msg.chat.id,
 							'Well, how long later do you want me to remind you?',
 							msg.message_id
+		,
+			cmd: 'choose'
+			num: -1
+			args: '<choices> <format>'
+			desc: """
+				Choose among <choices> and format the <format> string using the choice.
+				<choices> should be like: choice1-1,choice1-2;choice2-1,choice2-2
+				The result will be filled into placeholders in <format> in the original order.
+				supported placeholders are the same as in the printf function in C
+			"""
+			act: (msg, args) =>
+				results = []
+				for category in args[0].split ';'
+					console.log "working with #{category}"
+					choices = category.split ','
+					console.log "choices = #{choices}"
+					result = null
+					if choices.length > 0
+						index = Math.floor Math.random() * choices.length
+						console.log "index = #{index}"
+						result = choices[index]
+						console.log "result = #{result}"
+					results.push result
+				results.unshift args[1..].join ' '
+				console.log "results = #{results}"
+				str = printf.apply this, results
+				telegram.sendMessage msg.chat.id, str, msg.message_id
 		,
 			cmd: 'id'
 			num: 0

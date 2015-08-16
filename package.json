@@ -8,7 +8,8 @@
 	"dependencies": {
 		"telegram-bot-coffee": ">=1.0.0",
 		"korubaku": ">=1.0.1",
-		"request": ">=2.45.0"
+		"request": ">=2.45.0",
+		"printf": ">=0.2.3"
 	},
 	"main": "./lib/functions"
 }
