@@ -11,5 +11,8 @@
 		"request": ">=2.45.0",
 		"printf": ">=0.2.3"
 	},
+	"scripts": {
+		"prepublish": "cake build"
+	},
 	"main": "./lib/functions"
 }
